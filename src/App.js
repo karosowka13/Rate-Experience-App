@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Switch, Route, withRouter, Redirect } from "react-router-dom";
+import "./App.css";
+import loginForm from "./components/LoginForm/LoginForm";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	let secureRoutes = (
+		<React.Fragment>
+			<Switch>
+				<Route path="/" component={loginForm} />
+				<Route path="/logout" component={Logout} />
+				<Redirect to="/" />
+			</Switch>
+		</React.Fragment>
+	);
+	if (props.isAuth) {
+		secureRoutes = (
+			<React.Fragment>
+				<Switch>
+					<Route exact path="/logout" component={Logout} />
+					<Route exact path="/" component={sendMail} />
+					<Redirect to="/" />
+				</Switch>
+			</React.Fragment>
+		);
+	}
+	return <div className="App">{secureRoutes}</div>;
 }
 
 export default App;
