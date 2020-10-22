@@ -1,30 +1,21 @@
-import React, { useState } from "react";
-import { Switch, Route, withRouter, Redirect } from "react-router-dom";
+import React from "react";
+import { Switch, Route } from "react-router-dom";
 import "./App.css";
-import loginForm from "./components/LoginForm/LoginForm";
-
+import LoginForm from "./components/LoginForm/LoginForm";
+import Dashboard from "./components/Dashboard/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import { AuthProvider } from "./Service/Authentication";
 function App() {
-	let secureRoutes = (
-		<React.Fragment>
-			<Switch>
-				<Route path="/" component={loginForm} />
-				<Route path="/logout" component={Logout} />
-				<Redirect to="/" />
-			</Switch>
-		</React.Fragment>
-	);
-	if (props.isAuth) {
-		secureRoutes = (
-			<React.Fragment>
+	return (
+		<div className="App">
+			<AuthProvider>
 				<Switch>
-					<Route exact path="/logout" component={Logout} />
-					<Route exact path="/" component={sendMail} />
-					<Redirect to="/" />
+					<Route exact path="/login" component={LoginForm} />
+					<ProtectedRoute exact to="/" component={Dashboard} />
 				</Switch>
-			</React.Fragment>
-		);
-	}
-	return <div className="App">{secureRoutes}</div>;
+			</AuthProvider>
+		</div>
+	);
 }
 
 export default App;
