@@ -12,11 +12,7 @@ function App() {
 			<AuthProvider>
 				<Switch>
 					<Route exact path="/login" component={LoginForm} />
-					<Route
-						exact
-						path="/rate-experience:token"
-						component={RateExperience}
-					/>
+					<Route exact path="/rate-experience" component={RateExperience} />
 					<ProtectedRoute exact to="/" component={Dashboard} />
 				</Switch>
 			</AuthProvider>

@@ -1,7 +1,5 @@
 import React, { useState } from "react"; // add {useCallback, useContext}
 
-import logo from "../../images/LogoSouthcountrys--300x49.png";
-
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,7 +14,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Rating from "@material-ui/lab/Rating";
 
-import { createMuiTheme } from "@material-ui/core/styles";
+import logo from "../../images/LogoSouthTours--300x49.png";
+
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from "@material-ui/core";
 
 const theme = createMuiTheme({
 	palette: {
@@ -63,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 	textfield: { borderColor: "#052049", "&:focus": { borderColor: "#052049" } },
 	toolbar: { backgroundColor: "#052049" },
+	selectInput: { width: "100%" },
+	formControl: { width: "100%" },
 }));
 
 function RateExperience({ history }) {
@@ -328,11 +330,11 @@ function RateExperience({ history }) {
 	));
 	const handleRate = () => console.log("send message");
 
-	const handleInputChange = (e, index) => {
+	const handleInputChange = (e) => {
 		console.log(e.target);
 		const { name, value } = e.target;
 		const list = [...comment];
-		list[index][name] = value;
+		list[name] = value;
 		setComment(list);
 	};
 
@@ -347,6 +349,11 @@ function RateExperience({ history }) {
 				<div className={classes.paper}>
 					<form onSubmit={handleRate} className={classes.form} noValidate>
 						<h1>Rate your experience</h1>
+						<Rating
+							name="rating"
+							value={comment.rating}
+							onChange={(e) => handleInputChange(e)}
+						/>
 						<TextField
 							variant="outlined"
 							margin="normal"
@@ -354,7 +361,7 @@ function RateExperience({ history }) {
 							fullWidth
 							id="Name"
 							label="Your name"
-							name="Name"
+							name="name"
 							autoComplete="Name"
 							autoFocus
 							className={classes.textfield}
@@ -362,13 +369,12 @@ function RateExperience({ history }) {
 							value={comment.name}
 						/>
 						<FormControl variant="outlined" className={classes.formControl}>
-							<InputLabel id="outlined-label">country type</InputLabel>
+							<InputLabel id="country">country type</InputLabel>
 							<Select
-								className={classes.selectInput}
-								labelId="outlined-label"
+								labelId="country"
 								value={comment.country}
 								onChange={(e) => handleInputChange(e)}
-								label="country type"
+								label="Your country"
 								name="country"
 							>
 								{menuItem}
@@ -377,7 +383,6 @@ function RateExperience({ history }) {
 						<TextField
 							variant="outlined"
 							margin="normal"
-							required
 							fullWidth
 							name="city"
 							label="Your city"
@@ -387,17 +392,15 @@ function RateExperience({ history }) {
 							onChange={(e) => handleInputChange(e)}
 							value={comment.city}
 						/>
-						<Rating
-							name="rate-star"
-							value={comment.rating}
-							onChange={(e) => handleInputChange(e)}
-						/>
+
 						<TextField
+							multiline
+							rows={4}
 							variant="outlined"
 							margin="normal"
 							required
 							fullWidth
-							name="comment"
+							name="commentText"
 							label="Your comment"
 							id="comment"
 							borderColor="primary"
