@@ -16,9 +16,6 @@ import Container from "@material-ui/core/Container";
 
 import { createMuiTheme } from "@material-ui/core/styles";
 
-import { Link } from "react-router-dom";
-import "./LoginForm.module.css";
-
 const theme = createMuiTheme({
 	palette: {
 		primary: {
