@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import "./App.css";
 import LoginForm from "./components/LoginForm/LoginForm";
 import Dashboard from "./components/Dashboard/Dashboard";
@@ -13,7 +13,6 @@ function App() {
 				<Switch>
 					<Route exact path="/login" component={LoginForm} />
 					<Route exact path="/rate-experience/:id" component={RateExperience} />
-					<Redirect to="https://south.tours" />
 					<ProtectedRoute exact to="/" component={Dashboard} />
 				</Switch>
 			</AuthProvider>

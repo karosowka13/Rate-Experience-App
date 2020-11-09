@@ -169,15 +169,15 @@ export default function ButtonAppBar() {
 		sendMailForm = <h2>{error}</h2>;
 	} else if (mailSent) {
 		sendMailForm = (
-			<h2>
-				{mailSent}
+			<React.Fragment>
+				<h2>{mailSent}</h2>{" "}
 				<Button
 					className={classes.submit}
 					onClick={() => window.location.reload(false)}
 				>
 					Send new mails
 				</Button>
-			</h2>
+			</React.Fragment>
 		);
 	} else
 		sendMailForm = mailingList.map((value, i) => {
@@ -223,6 +223,9 @@ export default function ButtonAppBar() {
 							)}
 						</div>
 					</div>
+					<Button className={classes.sendMail} onClick={sendMail}>
+						Send mails
+					</Button>
 				</ThemeProvider>
 			);
 		});
@@ -246,9 +249,7 @@ export default function ButtonAppBar() {
 				</Toolbar>
 			</AppBar>
 			{sendMailForm}
-			<Button className={classes.sendMail} onClick={sendMail}>
-				Send mails
-			</Button>
+
 			<div className={classes.copyright}>
 				<Copyright />
 			</div>

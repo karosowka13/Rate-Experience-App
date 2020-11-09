@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"; // add {useCallback, useContext}
-import { useParams, Route, Redirect } from "react-router-dom";
+import { useParams, Route } from "react-router-dom";
 import axios from "axios";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -78,6 +80,7 @@ function RateExperience() {
 	]);
 	const [mailSent, setmailSent] = useState(false);
 	const [error, setError] = useState(null);
+	//const [token, setToken] = useState(useParams());
 	const classes = useStyles();
 	const countryList = [
 		"Afghanistan",
@@ -330,14 +333,12 @@ function RateExperience() {
 		"Zimbabwe",
 		"Åland Islands",
 	];
-
 	const token = useParams();
-
-	useEffect((token) => {
+	useEffect(() => {
 		axios
-			.get(process.env.REACT_APP_GETREVIEW + "?token=" + token)
+			.get(process.env.REACT_APP_GETREVIEW + "?token=" + token.id)
 			.then((response) => setGetCommentData(response.data));
-	}, []);
+	}, [token]);
 
 	const menuItem = countryList.map((countryName, index) => (
 		<MenuItem key={index} value={countryName}>
@@ -351,106 +352,151 @@ function RateExperience() {
 		list[name] = value;
 		setComment(list);
 	};
-	const sendComment = (e) => {
-		e.preventDefault();
-		setmailSent(true);
-		axios({
-			method: "post",
-			url: `${process.env.REACT_APP_SENDREVIEW}`,
-			headers: { "content-type": "application/json" },
-			data: comment,
-		})
-			.then((result) => {
-				if (result.data.sent) {
-					setmailSent(result.data.sent);
-					setError(false);
-				} else {
-					setError(true);
-				}
-			})
-			.catch((error) => setError(error.message));
-	};
-	let customerField = null;
-	if (!mailSent) {
-		customerField = (
-			<div className={classes.paper}>
-				<form className={classes.form} noValidate>
-					<h1>Rate your experience</h1>
-					<Rating
-						name="rating"
-						value={comment.rating}
-						onChange={(e) => handleInputChange(e)}
-					/>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						id="Name"
-						label="Your name"
-						name="name"
-						autoComplete="Name"
-						autoFocus
-						className={classes.textfield}
-						onChange={(e) => handleInputChange(e)}
-						value={comment.name}
-					/>
-					<FormControl variant="outlined" className={classes.formControl}>
-						<InputLabel id="country">Your country</InputLabel>
-						<Select
-							labelId="country"
-							value={comment.country}
-							onChange={(e) => handleInputChange(e)}
-							label="Your country"
-							name="country"
-							required
-						>
-							{menuItem}
-						</Select>
-					</FormControl>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						fullWidth
-						name="city"
-						label="Your city"
-						id="city"
-						autoComplete="current-city"
-						borderColor="primary"
-						onChange={(e) => handleInputChange(e)}
-						value={comment.city}
-					/>
 
-					<TextField
-						multiline
-						rows={4}
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						name="commentText"
-						label="Your comment"
-						id="comment"
-						borderColor="primary"
-						onChange={(e) => handleInputChange(e)}
-						value={comment.commentText}
-					/>
-					<Button
-						type="submit"
-						fullWidth
-						variant="contained"
-						className={classes.submit}
-						onClick={sendComment}
-					>
-						Rate the experience
-					</Button>
-				</form>
-			</div>
+	let customerField = null;
+
+	if (!mailSent && !getCommentData.isTokenUsed) {
+		customerField = (
+			<React.Fragment>
+				<Formik
+					initialValues={{
+						name: "",
+						country: "",
+						city: "",
+						commentText: "",
+						rating: "",
+					}}
+					onSubmit={(values, { setmailSent }) => {
+						setmailSent(true);
+						axios({
+							method: "post",
+							url: `${process.env.REACT_APP_SENDREVIEW}`,
+							headers: { "content-type": "application/json" },
+							data: values,
+						})
+							.then((result) => {
+								if (result.data.sent) {
+									setmailSent(result.data.sent);
+									setError(false);
+								} else {
+									setError(true);
+								}
+							})
+							.catch((error) => setError(error.message));
+					}}
+					validationSchema={Yup.object().shape({
+						name: Yup.string().email().required("Required"),
+						country: Yup.string().required("Required"),
+						commentText: Yup.string().required("Required"),
+						rating: Yup.number().required("Required"),
+					})}
+				>
+					{(props) => {
+						const {
+							values,
+							touched,
+							errors,
+							dirty,
+							isSubmitting,
+							handleChange,
+							handleSubmit,
+						} = props;
+						return (
+							<div className={classes.paper}>
+								<form className={classes.form} noValidate>
+									<h1>Rate your {getCommentData[0].tourName}</h1>
+									<Rating
+										name="rating"
+										value={comment.rating}
+										onChange={(e) => handleInputChange(e)}
+									/>
+									<TextField
+										variant="outlined"
+										margin="normal"
+										required
+										fullWidth
+										id="Name"
+										label="Your name"
+										name="name"
+										autoComplete="Name"
+										autoFocus
+										className={classes.textfield}
+										onChange={(e) => handleInputChange(e)}
+										value={comment.name}
+									/>
+									<FormControl
+										variant="outlined"
+										className={classes.formControl}
+									>
+										<InputLabel id="country">Your country</InputLabel>
+										<Select
+											labelId="country"
+											value={comment.country}
+											onChange={(e) => handleInputChange(e)}
+											label="Your country"
+											name="country"
+											required
+										>
+											{menuItem}
+										</Select>
+									</FormControl>
+									<TextField
+										variant="outlined"
+										margin="normal"
+										fullWidth
+										name="city"
+										label="Your city"
+										id="city"
+										autoComplete="current-city"
+										bordercolor="primary"
+										onChange={(e) => handleInputChange(e)}
+										value={comment.city}
+									/>
+
+									<TextField
+										multiline
+										rows={4}
+										variant="outlined"
+										margin="normal"
+										required
+										fullWidth
+										name="commentText"
+										label="Your comment"
+										id="comment"
+										bordercolor="primary"
+										onChange={(e) => handleInputChange(e)}
+										value={comment.commentText}
+									/>
+									<Button
+										type="submit"
+										fullWidth
+										variant="contained"
+										className={classes.submit}
+										onClick={sendComment}
+									>
+										Rate the experience
+									</Button>
+								</form>
+							</div>
+						);
+					}}
+				</Formik>
+			</React.Fragment>
 		);
-	} else if (!mailSent) {
+	} else if (mailSent) {
 		customerField = <h2>Thank you for your opinion. </h2>;
 	} else if (error) {
 		customerField = <h2>{error}. Please, try again.</h2>;
+	} else if (getCommentData[0].isTokenUsed || !token) {
+		customerField = (
+			<Route
+				path="/privacy-policy"
+				component={() => {
+					window.location.href = "https://south.tours";
+					return null;
+				}}
+			/>
+		);
 	}
 
 	return (
