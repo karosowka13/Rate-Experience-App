@@ -13,6 +13,13 @@ function App() {
 				<Switch>
 					<Route exact path="/login" component={LoginForm} />
 					<Route exact path="/rate-experience/:id" component={RateExperience} />
+					<Route
+						path="/privacy-policy"
+						render={() => {
+							window.location.href = "https://south.tours";
+							return null;
+						}}
+					/>
 					<ProtectedRoute exact to="/" component={Dashboard} />
 				</Switch>
 			</AuthProvider>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"; // add {useCallback, useContext}
-import { useParams, Route } from "react-router-dom";
+import { useParams, Redirect } from "react-router-dom";
 import axios from "axios";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik } from "formik";
 import * as Yup from "yup";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: theme.spacing(1),
 	},
 	submit: {
-		margin: theme.spacing(3, 0, 2),
+		margin: theme.spacing(2, 0, 2),
 		height: "2.7rem",
 		backgroundColor: "#052049",
 		color: "white",
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	textfield: { borderColor: "#052049", "&:focus": { borderColor: "#052049" } },
 	toolbar: { backgroundColor: "#052049" },
-	selectInput: { width: "100%" },
+	select: { width: "100%" },
 	formControl: { width: "100%" },
 }));
 
@@ -75,9 +75,7 @@ function RateExperience() {
 	const [getCommentData, setGetCommentData] = useState([
 		{ isTokenUsed: false, tourName: "" },
 	]);
-	const [comment, setComment] = useState([
-		{ name: "", country: "", city: "", commentText: "", rating: "" },
-	]);
+
 	const [mailSent, setmailSent] = useState(false);
 	const [error, setError] = useState(null);
 	//const [token, setToken] = useState(useParams());
@@ -346,16 +344,9 @@ function RateExperience() {
 		</MenuItem>
 	));
 
-	const handleInputChange = (e) => {
-		const { name, value } = e.target;
-		const list = [...comment];
-		list[name] = value;
-		setComment(list);
-	};
-
 	let customerField = null;
 
-	if (!mailSent && !getCommentData.isTokenUsed) {
+	if (!mailSent && !parseInt(getCommentData[0].isTokenUsed)) {
 		customerField = (
 			<React.Fragment>
 				<Formik
@@ -364,19 +355,20 @@ function RateExperience() {
 						country: "",
 						city: "",
 						commentText: "",
-						rating: "",
+						rating: 0,
+						isTokenUsed: false,
 					}}
-					onSubmit={(values, { setmailSent }) => {
-						setmailSent(true);
+					onSubmit={(values, { setSubmitting }) => {
+						setSubmitting(true);
 						axios({
-							method: "post",
-							url: `${process.env.REACT_APP_SENDREVIEW}`,
+							method: "put",
+							url: `${process.env.REACT_APP_SENDREVIEW}` + token.id,
 							headers: { "content-type": "application/json" },
 							data: values,
 						})
 							.then((result) => {
-								if (result.data.sent) {
-									setmailSent(result.data.sent);
+								if (result) {
+									setmailSent(true);
 									setError(false);
 								} else {
 									setError(true);
@@ -385,10 +377,11 @@ function RateExperience() {
 							.catch((error) => setError(error.message));
 					}}
 					validationSchema={Yup.object().shape({
-						name: Yup.string().email().required("Required"),
+						name: Yup.string().required("Required"),
 						country: Yup.string().required("Required"),
 						commentText: Yup.string().required("Required"),
-						rating: Yup.number().required("Required"),
+						rating: Yup.number().min(1).required("Required"),
+						city: Yup.string(),
 					})}
 				>
 					{(props) => {
@@ -396,19 +389,23 @@ function RateExperience() {
 							values,
 							touched,
 							errors,
-							dirty,
+							handleBlur,
 							isSubmitting,
 							handleChange,
 							handleSubmit,
 						} = props;
 						return (
 							<div className={classes.paper}>
-								<form className={classes.form} noValidate>
+								<form className={classes.form} onSubmit={handleSubmit}>
 									<h1>Rate your {getCommentData[0].tourName}</h1>
 									<Rating
 										name="rating"
-										value={comment.rating}
-										onChange={(e) => handleInputChange(e)}
+										value={parseInt(values.rating)}
+										onChange={handleChange}
+										onBlur={handleBlur}
+										helpertext={
+											errors.rating && touched.rating && errors.rating
+										}
 									/>
 									<TextField
 										variant="outlined"
@@ -421,8 +418,10 @@ function RateExperience() {
 										autoComplete="Name"
 										autoFocus
 										className={classes.textfield}
-										onChange={(e) => handleInputChange(e)}
-										value={comment.name}
+										onChange={handleChange}
+										value={values.name}
+										onBlur={handleBlur}
+										helpertext={errors.name && touched.name && errors.name}
 									/>
 									<FormControl
 										variant="outlined"
@@ -431,11 +430,14 @@ function RateExperience() {
 										<InputLabel id="country">Your country</InputLabel>
 										<Select
 											labelId="country"
-											value={comment.country}
-											onChange={(e) => handleInputChange(e)}
+											value={values.country}
+											onChange={handleChange}
 											label="Your country"
 											name="country"
-											required
+											onBlur={handleBlur}
+											helpertext={
+												errors.country && touched.country && errors.country
+											}
 										>
 											{menuItem}
 										</Select>
@@ -449,8 +451,10 @@ function RateExperience() {
 										id="city"
 										autoComplete="current-city"
 										bordercolor="primary"
-										onChange={(e) => handleInputChange(e)}
-										value={comment.city}
+										onChange={handleChange}
+										value={values.city}
+										onBlur={handleBlur}
+										helpertext={errors.city && touched.city && errors.city}
 									/>
 
 									<TextField
@@ -464,15 +468,22 @@ function RateExperience() {
 										label="Your comment"
 										id="comment"
 										bordercolor="primary"
-										onChange={(e) => handleInputChange(e)}
-										value={comment.commentText}
+										onChange={handleChange}
+										value={values.commentText}
+										onBlur={handleBlur}
+										helpertext={
+											errors.commentText &&
+											touched.commentText &&
+											errors.commentText
+										}
 									/>
 									<Button
 										type="submit"
 										fullWidth
 										variant="contained"
 										className={classes.submit}
-										onClick={sendComment}
+										disabled={isSubmitting}
+										onClick={handleSubmit}
 									>
 										Rate the experience
 									</Button>
@@ -484,18 +495,23 @@ function RateExperience() {
 			</React.Fragment>
 		);
 	} else if (mailSent) {
-		customerField = <h2>Thank you for your opinion. </h2>;
-	} else if (error) {
-		customerField = <h2>{error}. Please, try again.</h2>;
-	} else if (getCommentData[0].isTokenUsed || !token) {
 		customerField = (
-			<Route
-				path="/privacy-policy"
-				component={() => {
-					window.location.href = "https://south.tours";
-					return null;
-				}}
-			/>
+			<div className={classes.messageContainer}>
+				{" "}
+				<h2>Thank you for your opinion. </h2>
+			</div>
+		);
+	} else if (error) {
+		customerField = (
+			<div className={classes.messageContainer}>
+				<h2>{error}. Please, try again.</h2>
+			</div>
+		);
+	} else {
+		customerField = (
+			<React.Fragment>
+				<Redirect to="/privacy-policy" />
+			</React.Fragment>
 		);
 	}
 
