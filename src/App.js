@@ -11,8 +11,8 @@ function App() {
 		<div className="App">
 			<AuthProvider>
 				<Switch>
-					<Route exact path="/login" component={LoginForm} />
-					<Route exact path="/rate-experience/:id" component={RateExperience} />
+					<Route path="/rate-experience/:id" component={RateExperience} />
+					<Route path="/login" component={LoginForm} />
 					<Route
 						path="/privacy-policy"
 						render={() => {

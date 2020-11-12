@@ -75,10 +75,9 @@ function RateExperience() {
 	const [getCommentData, setGetCommentData] = useState([
 		{ isTokenUsed: false, tourName: "" },
 	]);
-
 	const [mailSent, setmailSent] = useState(false);
 	const [error, setError] = useState(null);
-	//const [token, setToken] = useState(useParams());
+
 	const classes = useStyles();
 	const countryList = [
 		"Afghanistan",
@@ -345,8 +344,11 @@ function RateExperience() {
 	));
 
 	let customerField = null;
-
-	if (!mailSent && !parseInt(getCommentData[0].isTokenUsed)) {
+	console.log(getCommentData);
+	if (
+		!mailSent &&
+		!parseInt(getCommentData[0].isTokenUsed || getCommentData === "not exist")
+	) {
 		customerField = (
 			<React.Fragment>
 				<Formik

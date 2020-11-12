@@ -3,11 +3,17 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import { createBrowserHistory } from "history";
+
 import * as serviceWorker from "./serviceWorker";
+
+const history = createBrowserHistory({
+	basename: "rate_experience",
+});
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Router>
+		<Router history={history}>
 			<App />
 		</Router>
 	</React.StrictMode>,

@@ -114,11 +114,14 @@ export default function ButtonAppBar() {
 			.then((response) => setTourList(response.data));
 	}, []);
 
-	const menuItem = toursList.map((tourName, index) => (
-		<MenuItem key={index} value={tourName}>
-			{tourName.post_title}
-		</MenuItem>
-	));
+	let menuItem = "There are no tour list.";
+	if (toursList.length > 0) {
+		menuItem = toursList.map((tourName, index) => (
+			<MenuItem key={index} value={tourName}>
+				{tourName.post_title}
+			</MenuItem>
+		));
+	}
 
 	const handleInputChange = (e, index) => {
 		const { name, value } = e.target;
@@ -142,7 +145,6 @@ export default function ButtonAppBar() {
 	};
 
 	const sendMail = (e) => {
-		console.log(mailingList);
 		e.preventDefault();
 		setLoading(true);
 		axios({
@@ -179,7 +181,7 @@ export default function ButtonAppBar() {
 				</Button>
 			</React.Fragment>
 		);
-	} else
+	} else {
 		sendMailForm = mailingList.map((value, i) => {
 			return (
 				<ThemeProvider key={i} theme={theme}>
@@ -229,6 +231,7 @@ export default function ButtonAppBar() {
 				</ThemeProvider>
 			);
 		});
+	}
 	return (
 		<div className={classes.root}>
 			<AppBar position="static">
