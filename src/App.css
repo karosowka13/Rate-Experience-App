@@ -28,6 +28,12 @@
 	color: #61dafb;
 }
 
+.Copyright {
+	position: absolute;
+	bottom: 3%;
+	left: 45%;
+}
+
 .App h2 {
 	color: #052049;
 }

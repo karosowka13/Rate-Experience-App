@@ -90,8 +90,9 @@ function LoginForm({ history }) {
 	return (
 		<ThemeProvider theme={theme}>
 			<Toolbar className={classes.toolbar}>
-				{" "}
-				<img alt="logo" src={logo} />
+				<a href="https://south.tours/">
+					<img src={logo} alt="logo" />
+				</a>
 			</Toolbar>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
@@ -132,7 +133,9 @@ function LoginForm({ history }) {
 					</form>
 				</div>
 				<Box mt={8}>
-					<Copyright />
+					<div className="Copyright">
+						<Copyright />
+					</div>
 				</Box>
 			</Container>
 		</ThemeProvider>

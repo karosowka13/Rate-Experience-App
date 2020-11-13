@@ -43,20 +43,26 @@ const useStyles = makeStyles((theme) => ({
 	toolbar: { backgroundColor: "#052049" },
 	inputBox: {
 		width: "50%",
-		display: "flex",
-		flexDirection: "row",
-		flexWrap: "nowrap",
-		justifyContent: "flex-start",
+		display: "grid",
+		gridTemplateColumns: "230px 230px 1fr 1fr",
+		gridTemplateRows: " 56px",
+		justifyContent: "start",
+		columnGap: "10px",
 		margin: "0 auto",
-		paddingTop: "15px",
+		paddingTop: "10px",
 		["@media (max-width:750px)"]: {
 			width: "90%",
+			display: "flex",
+			flexDirection: "row",
+			flexWrap: "nowrap",
+			justifyContent: "flex-start",
 		},
 		["@media (max-width:590px)"]: {
 			flexDirection: "column",
 		},
 	},
 	submit: {
+		gridArea: "button",
 		height: "56px",
 		backgroundColor: "#052049",
 		color: "white",
@@ -67,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	sendMail: {
+		gridArea: "send",
 		height: "56px",
 		backgroundColor: "#052049",
 		color: "white",
@@ -85,6 +92,12 @@ const useStyles = makeStyles((theme) => ({
 			width: "100%",
 			margin: "0",
 		},
+	},
+	buttonContainer: {
+		display: "flex",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		justifyContent: "flex-start",
 	},
 }));
 
@@ -201,7 +214,7 @@ export default function ButtonAppBar() {
 							<Select
 								className={classes.selectInput}
 								labelId="outlined-label"
-								value={value.tour.post_title}
+								value={toursList.length > 0 ? value.tour.post_title : ""}
 								onChange={(e) => handleInputChange(e, i)}
 								label="Tour type"
 								name="tour"
@@ -219,15 +232,17 @@ export default function ButtonAppBar() {
 								</Button>
 							)}
 							{mailingList.length - 1 === i && (
-								<Button className={classes.submit} onClick={handleAdd}>
-									Add
-								</Button>
+								<React.Fragment>
+									<Button className={classes.submit} onClick={handleAdd}>
+										Add
+									</Button>
+									<Button className={classes.sendMail} onClick={sendMail}>
+										Send mails
+									</Button>
+								</React.Fragment>
 							)}
 						</div>
 					</div>
-					<Button className={classes.sendMail} onClick={sendMail}>
-						Send mails
-					</Button>
 				</ThemeProvider>
 			);
 		});
@@ -242,7 +257,9 @@ export default function ButtonAppBar() {
 						color="inherit"
 						aria-label="menu"
 					></IconButton>
-					<img src={logo} alt="logo" />
+					<a href="https://south.tours/">
+						<img src={logo} alt="logo" />
+					</a>
 					<Button
 						className={classes.menuButton}
 						onClick={() => app.auth().signOut()}
@@ -252,8 +269,7 @@ export default function ButtonAppBar() {
 				</Toolbar>
 			</AppBar>
 			{sendMailForm}
-
-			<div className={classes.copyright}>
+			<div className="Copyright">
 				<Copyright />
 			</div>
 		</div>

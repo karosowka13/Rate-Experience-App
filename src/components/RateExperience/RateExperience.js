@@ -520,13 +520,15 @@ function RateExperience() {
 	return (
 		<ThemeProvider theme={theme}>
 			<Toolbar className={classes.toolbar}>
-				<img alt="logo" src={logo} />
+				<a href="https://south.tours/">
+					<img src={logo} alt="logo" />
+				</a>
 			</Toolbar>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
 				{customerField}
 				<Box mt={8}>
-					<div className={classes.copyright}>
+					<div className="Copyright">
 						<Copyright />
 					</div>
 				</Box>
