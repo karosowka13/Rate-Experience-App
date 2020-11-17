@@ -195,57 +195,59 @@ export default function ButtonAppBar() {
 			</React.Fragment>
 		);
 	} else {
-		sendMailForm = mailingList.map((value, i) => {
-			return (
-				<ThemeProvider key={i} theme={theme}>
-					<div className={classes.inputBox}>
-						<TextField
-							variant="outlined"
-							margin="normal"
-							name="mail"
-							label="Mail"
-							type="mail"
-							value={value.mail}
-							required
-							onChange={(e) => handleInputChange(e, i)}
-						/>
-						<FormControl variant="outlined" className={classes.formControl}>
-							<InputLabel id="outlined-label">Tour type</InputLabel>
-							<Select
-								className={classes.selectInput}
-								labelId="outlined-label"
-								value={toursList.length > 0 ? value.tour.post_title : ""}
+		if (toursList.length > 0) {
+			sendMailForm = mailingList.map((value, i) => {
+				return (
+					<ThemeProvider key={i} theme={theme}>
+						<div className={classes.inputBox}>
+							<TextField
+								variant="outlined"
+								margin="normal"
+								name="mail"
+								label="Mail"
+								type="mail"
+								value={value.mail}
+								required
 								onChange={(e) => handleInputChange(e, i)}
-								label="Tour type"
-								name="tour"
-							>
-								{menuItem}
-							</Select>
-						</FormControl>
-						<div className={classes.buttonContainer}>
-							{mailingList.length !== 1 && (
-								<Button
-									className={classes.submit}
-									onClick={() => handleRemove(i)}
+							/>
+							<FormControl variant="outlined" className={classes.formControl}>
+								<InputLabel id="outlined-label">Tour type</InputLabel>
+								<Select
+									className={classes.selectInput}
+									labelId="outlined-label"
+									value={value.tour.post_title}
+									onChange={(e) => handleInputChange(e, i)}
+									label="Tour type"
+									name="tour"
 								>
-									Remove
-								</Button>
-							)}
-							{mailingList.length - 1 === i && (
-								<React.Fragment>
-									<Button className={classes.submit} onClick={handleAdd}>
-										Add
+									{menuItem}
+								</Select>
+							</FormControl>
+							<div className={classes.buttonContainer}>
+								{mailingList.length !== 1 && (
+									<Button
+										className={classes.submit}
+										onClick={() => handleRemove(i)}
+									>
+										Remove
 									</Button>
-									<Button className={classes.sendMail} onClick={sendMail}>
-										Send mails
-									</Button>
-								</React.Fragment>
-							)}
+								)}
+								{mailingList.length - 1 === i && (
+									<React.Fragment>
+										<Button className={classes.submit} onClick={handleAdd}>
+											Add
+										</Button>
+										<Button className={classes.sendMail} onClick={sendMail}>
+											Send mails
+										</Button>
+									</React.Fragment>
+								)}
+							</div>
 						</div>
-					</div>
-				</ThemeProvider>
-			);
-		});
+					</ThemeProvider>
+				);
+			});
+		}
 	}
 	return (
 		<div className={classes.root}>

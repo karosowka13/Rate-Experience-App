@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 function RateExperience() {
 	const [getCommentData, setGetCommentData] = useState([
-		{ isTokenUsed: false, tourName: "" },
+		{ isTokenUsed: "0", tourName: "" },
 	]);
 	const [mailSent, setmailSent] = useState(false);
 	const [error, setError] = useState(null);
@@ -344,10 +344,10 @@ function RateExperience() {
 	));
 
 	let customerField = null;
-	console.log(getCommentData);
 	if (
 		!mailSent &&
-		!parseInt(getCommentData[0].isTokenUsed || getCommentData === "not exist")
+		!parseInt(getCommentData[0].isTokenUsed) &&
+		getCommentData !== "not exist"
 	) {
 		customerField = (
 			<React.Fragment>
@@ -528,9 +528,7 @@ function RateExperience() {
 				<CssBaseline />
 				{customerField}
 				<Box mt={8}>
-					<div className="Copyright">
-						<Copyright />
-					</div>
+					<Copyright />
 				</Box>
 			</Container>
 		</ThemeProvider>
